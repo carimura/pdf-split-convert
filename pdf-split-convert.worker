@@ -1,0 +1,12 @@
+runtime "ruby"
+exec "pdf-split-convert.rb"
+
+gem "aws"
+gem "iron_worker_ng"
+gem "iron_cache"
+
+file 'fctest181_original.pdf'
+file 'libgcj.so.12'
+file 'pdftk.sh'
+
+build 'curl http://mirror.pnl.gov/ubuntu//pool/universe/p/pdftk/pdftk_1.44-4build1_amd64.deb -o p.deb && ar xv p.deb && tar xf data.tar.gz && mv usr/bin/pdftk . && chmod +x pdftk.sh && rm -Rf usr data.tar.gz p.deb control.tar.gz debian-binary'
