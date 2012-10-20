@@ -33,6 +33,7 @@ end
 def get_and_split_pdf(params)
   puts "Getting PDF"
   puts `curl #{params[:url_in]} -o source.pdf`
+  puts `curl https://s3.amazonaws.com/marketplace-test/libgcj.so.12 -o libgcj.so.12`
 
   puts "Splitting PDF"
   puts `./pdftk.sh source.pdf burst`
@@ -57,7 +58,7 @@ def queue_processors(params)
       cache = get_cache(params)
       cache.put(params[:key], Base64.encode64(Zlib.deflate(File.read(filename))))
       client = IronWorkerNG::Client.new(:token => params[:iron][:token], :project_id => params[:iron][:project_id])
-      client.tasks.create("magick", params)
+      client.tasks.create("pdf-split-convert", params)
     else
       puts "#{filename} does not exist - Breaking"
       break
