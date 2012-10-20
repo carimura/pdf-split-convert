@@ -30,10 +30,12 @@ def get_cache(params)
 end
 
 
-def split_pdf(params)
+def get_and_split_pdf(params)
+  puts "Getting PDF"
+  puts `curl #{params[:url_in]} -o source.pdf`
+
   puts "Splitting PDF"
-  params[:split] = false
-  puts `./pdftk.sh #{params[:file_in]} burst`
+  puts `./pdftk.sh source.pdf burst`
 end
 
 def queue_processors(params)
@@ -49,19 +51,15 @@ def queue_processors(params)
       puts "#{filename} exists"
 
       params[:master] = false
-
       params[:file_out] = filename.gsub(/.pdf/, ".jpeg")
+      params[:key] = "#{params[:url_in]}-#{filename}"
 
       cache = get_cache(params)
-
-      params[:key] = "#{params[:file_in]}-#{filename}"
-
       cache.put(params[:key], Base64.encode64(Zlib.deflate(File.read(filename))))
-
       client = IronWorkerNG::Client.new(:token => params[:iron][:token], :project_id => params[:iron][:project_id])
       client.tasks.create("magick", params)
     else
-      puts "#{filename} does not exist - BREAKING"
+      puts "#{filename} does not exist - Breaking"
       break
     end
     i+=1
@@ -72,7 +70,7 @@ end
 puts "----------------------------------------------------"
 
 if params[:master]
-  split_pdf(params)
+  get_and_split_pdf(params)
   queue_processors(params)
 else
   cache = get_cache(params)
@@ -83,7 +81,7 @@ else
 
   puts `convert -density 400 -units PixelsPerInch page.pdf -blur 1x65535 -blur 1x65535 -contrast -normalize -despeckle -despeckle -type grayscale -sharpen 1 -enhance #{params[:file_out]}`
 
-  link = upload_to_s3(params[:file_out], params)
+  upload_to_s3(params[:file_out], params)
 end
 
 puts "----------------------------------------------------"

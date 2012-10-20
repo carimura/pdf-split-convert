@@ -5,7 +5,6 @@ gem "aws"
 gem "iron_worker_ng"
 gem "iron_cache"
 
-file 'fctest181_original.pdf'
 file 'libgcj.so.12'
 file 'pdftk.sh'
 
