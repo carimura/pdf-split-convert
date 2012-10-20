@@ -53,8 +53,7 @@ def queue_processors(params)
 
       params[:master] = false
       params[:file_out] = filename.gsub(/.pdf/, ".jpeg")
-      #params[:key] = "#{params[:url_in]}-#{filename}"
-      params[:key] = "some-file-#{filename}"
+      params[:key] = "#{params[:url_in].gsub(/\//,"")}-#{filename}"
 
       cache = get_cache(params)
       cache.put(params[:key], Base64.encode64(Zlib.deflate(File.read(filename))))
