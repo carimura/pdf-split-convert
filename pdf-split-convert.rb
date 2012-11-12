@@ -1,5 +1,4 @@
 require 'aws'
-require 'mail'
 require 'iron_worker_ng'
 require 'iron_cache'
 require 'zlib'
@@ -33,10 +32,9 @@ end
 def get_and_split_pdf(params)
   puts "Getting PDF"
   puts `curl #{params[:url_in]} -o source.pdf`
-  puts `curl https://s3.amazonaws.com/marketplace-test/libgcj.so.12 -o libgcj.so.12`
 
   puts "Splitting PDF"
-  puts `./pdftk.sh source.pdf burst`
+  puts `pdftk source.pdf burst`
 end
 
 def queue_processors(params)
@@ -45,8 +43,6 @@ def queue_processors(params)
   while i < 1000
     num = "%04d" % i
     filename = "pg_#{num}.pdf"
-
-    #break if i==5
 
     if File.file?(filename)
       puts "#{filename} exists"
@@ -80,7 +76,8 @@ else
   f.write(data)
   f.close
 
-  puts `convert -density 400 -units PixelsPerInch page.pdf -blur 1x65535 -blur 1x65535 -contrast -normalize -despeckle -despeckle -type grayscale -sharpen 1 -enhance #{params[:file_out]}`
+  `chmod +x convert.sh`
+  puts `./convert.sh #{params[:file_out]}`
 
   upload_to_s3(params[:file_out], params)
 end

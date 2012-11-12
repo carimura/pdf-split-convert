@@ -1,11 +1,17 @@
 runtime "ruby"
 exec "pdf-split-convert.rb"
+full_remote_build true
+
+file 'convert.sh'
 
 gem "aws"
 gem "iron_worker_ng"
 gem "iron_cache"
 
-file 'libgcj.so.12'
-file 'pdftk.sh'
-
-build 'curl http://mirror.pnl.gov/ubuntu//pool/universe/p/pdftk/pdftk_1.44-4build1_amd64.deb -o p.deb && ar xv p.deb && tar xf data.tar.gz && mv usr/bin/pdftk . && chmod +x pdftk.sh && rm -Rf usr data.tar.gz p.deb control.tar.gz debian-binary'
+deb 'http://mirror.pnl.gov/ubuntu//pool/main/i/imagemagick/imagemagick_6.7.7.10-2ubuntu4_amd64.deb'
+deb 'http://mirror.pnl.gov/ubuntu//pool/main/libl/liblqr/liblqr-1-0_0.4.1-2_amd64.deb'
+deb 'http://mirror.pnl.gov/ubuntu//pool/main/i/imagemagick/libmagickcore5_6.7.7.10-2ubuntu4_amd64.deb'
+deb 'http://mirror.pnl.gov/ubuntu//pool/main/i/imagemagick/libmagickwand5_6.7.7.10-2ubuntu4_amd64.deb'
+deb 'http://mirror.pnl.gov/ubuntu//pool/main/f/fftw3/libfftw3-3_3.3.2-3.1ubuntu1_amd64.deb'
+deb 'http://mirror.pnl.gov/ubuntu//pool/main/g/gcj-4.6/libgcj12_4.6.1-4ubuntu2_amd64.deb'
+deb 'http://mirror.pnl.gov/ubuntu//pool/universe/p/pdftk/pdftk_1.44-4build1_amd64.deb'
